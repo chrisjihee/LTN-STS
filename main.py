@@ -49,15 +49,15 @@ def do_experiment(
     if num_train_sample is not None and num_test_sample is not None:
         for k in raw_datasets.keys():
             raw_datasets[k] = Dataset.from_dict(raw_datasets[k][:(num_train_sample if k == "train" else num_test_sample)])
-    print("\n" + "=" * 120)
+    print("\n" + "=" * 112)
     print(f'[raw_datasets] {raw_datasets}')
     text1_key, text2_key = "sentence1", "sentence2"
     print(f'- input_columns: {text1_key}, {text2_key}')
-    print("=" * 120 + "\n")
+    print("=" * 112 + "\n")
 
     # load tokenizer
     tokenizer = ElectraTokenizer.from_pretrained(pretrained)
-    print("\n" + "=" * 120)
+    print("\n" + "=" * 112)
     print(f'[tokenizer] {tokenizer}')
     if check_tokenizer:
         text = "[CLS] 한국어 ELECTRA를 공유합니다. [SEP]"
@@ -66,7 +66,7 @@ def do_experiment(
         print("- text   =", text)
         print("- tokens =", tokens)
         print("- ids    =", ids)
-    print("=" * 120 + "\n")
+    print("=" * 112 + "\n")
 
     # tokenize texts in the given examples
     def batch_tokenize(examples):
@@ -76,10 +76,10 @@ def do_experiment(
         result = tokenizer(*args, padding='max_length', max_length=max_seq_length, truncation=True)
         num_check = min(len(result['input_ids']), num_check_tokenized)
         if num_check > 0:
-            print("\n" + "=" * 120)
+            print("\n" + "=" * 112)
             for i, a in enumerate(result['input_ids'][:num_check]):
                 print(f"- [tokens][{i}]({len(a)})\t= {tokenizer.convert_ids_to_tokens(a)}")
-            print("=" * 120 + "\n")
+            print("=" * 112 + "\n")
         return result
 
     # tokenize texts in datasets and make loaders
@@ -106,7 +106,7 @@ def do_experiment(
             config = ElectraConfig.from_pretrained(pretrained, num_labels=num_labels)
             self.classifier = ElectraClassificationHead(config)
             self.electra = ElectraModel.from_pretrained(pretrained, config=config)
-            print("\n" + "=" * 120)
+            print("\n" + "=" * 112)
             print(f'[pretrained] {chr(10).join(str(self.electra).splitlines()[:8])}')
             if check_pretrained:
                 batch_text = ["한국어 모델을 공유합니다.", "오늘은 날씨가 좋다."]
@@ -120,7 +120,7 @@ def do_experiment(
                 print(f"- attention_mask({list(torch.tensor(inputs['attention_mask']).size())}) : {inputs['attention_mask'][0]}")
                 print(f"- token_type_ids({list(torch.tensor(inputs['token_type_ids']).size())}) : {inputs['token_type_ids'][0]}")
                 print(f"-   hidden_state({list(hidden.size())}) : {hidden[0]}")
-            print("=" * 120 + "\n")
+            print("=" * 112 + "\n")
 
         def forward(self, x1, x2, x3):
             hidden = self.electra(
@@ -143,10 +143,10 @@ def do_experiment(
 
     # metric setting
     metric = load_metric("glue", "mrpc")
-    print("\n" + "=" * 120)
+    print("\n" + "=" * 112)
     print(f'[metric] {metric.info.metric_name}/{metric.info.config_name}')
     print(f'- {metric.info.description.strip().splitlines()[0]}')
-    print("=" * 120 + "\n")
+    print("=" * 112 + "\n")
 
     # computes the overall metric of the predictions
     def compute_metric(loader):
