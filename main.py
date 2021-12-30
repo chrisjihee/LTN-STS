@@ -36,12 +36,15 @@ class DataLoader(object):
             )
 
 
+token_printing_counter = 0
+
+
 # train LTN model and test
 def do_experiment(
         data_files, pretrained, max_epoch,
         num_train_sample=None, num_test_sample=50,
         max_seq_length=512, learning_rate=1e-5, batch_size=8,
-        num_check_tokenized=2, check_tokenizer=False, check_pretrained=False,
+        num_check_tokenized=1, check_tokenizer=False, check_pretrained=False,
         device=ltn.device
 ):
     # load raw datasets
@@ -70,20 +73,23 @@ def do_experiment(
 
     # tokenize texts in the given examples
     def batch_tokenize(examples):
+        global token_printing_counter
         args = (
             (examples[text1_key],) if text2_key is None else (examples[text1_key], examples[text2_key])
         )
         result = tokenizer(*args, padding='max_length', max_length=max_seq_length, truncation=True)
-        num_check = min(len(result['input_ids']), num_check_tokenized)
-        if num_check > 0:
+        if token_printing_counter < num_check_tokenized:
             print("\n" + "=" * 112)
-            for i, a in enumerate(result['input_ids'][:num_check]):
-                print(f"- [tokens][{i}]({len(a)})\t= {tokenizer.convert_ids_to_tokens(a)}")
+            for i, a in enumerate(result['input_ids'][:1]):
+                print(f"- [tokens]({len(a)})\t= {tokenizer.convert_ids_to_tokens(a)}")
+                token_printing_counter += 1
             print("=" * 112 + "\n")
         return result
 
     # tokenize texts in datasets and make loaders
-    raw_datasets = raw_datasets.map(batch_tokenize, batched=True, batch_size=1000, num_proc=1,
+    global token_printing_counter
+    token_printing_counter = 0
+    raw_datasets = raw_datasets.map(batch_tokenize, batched=True, batch_size=2000, num_proc=1,
                                     load_from_cache_file=False, desc="Running tokenizer on dataset")
     train_dataset = raw_datasets["train"]
     valid_dataset = raw_datasets["valid"]
