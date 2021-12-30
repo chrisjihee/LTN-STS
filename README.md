@@ -35,6 +35,7 @@ Please check the results with following.
 LTN-STS has been developed thanks to the following people.
 
 - [Tommaso Carraro](https://github.com/bmxitalia)
-- [Samy Badreddine](https://www.ai.sony/people/c6ecb9ab786d5b75047f5b00515dc67bae284640/)
+- [Samy Badreddine](https://www.ai.sony/people/c6ecb9ab786d5b75047f5b00515dc67bae284640)
 - [Seung-Hoon Na](https://nlp.jbnu.ac.kr/~nash/faculty.html)
+- [Sungjoon Park](https://sungjoonpark.github.io)
 - [Jangwon Park](https://github.com/monologg)

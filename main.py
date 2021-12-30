@@ -41,12 +41,19 @@ token_printing_counter = 0
 
 # train LTN model and test
 def do_experiment(
-        data_files, pretrained, max_epoch,
+        n_gpu, max_epoch, pretrained, data_files,
         num_train_sample=None, num_test_sample=50,
         max_seq_length=512, learning_rate=1e-5, batch_size=8,
         num_check_tokenized=1, check_tokenizer=False, check_pretrained=False,
-        device=ltn.device
 ):
+    # set cuda device
+    gpu_ids = [f"cuda:{n}" for n in range(torch.cuda.device_count())]
+    device = torch.device(gpu_ids[n_gpu % len(gpu_ids)] if torch.cuda.is_available() else "cpu")
+    ltn.device = device
+    print("\n" + "=" * 120)
+    print(f"[device] {device} ∈ [{', '.join(gpu_ids)}]")
+    print("=" * 120 + "\n")
+
     # load raw datasets
     raw_datasets = load_dataset("json", data_files=data_files, field="data")
     if num_train_sample is not None and num_test_sample is not None:
@@ -210,7 +217,10 @@ def do_experiment(
 
 # main entry
 if __name__ == '__main__':
-    do_experiment(data_files={
+    data_files = {
         "train": "data/klue-sts-cls/train.json",
         "valid": "data/klue-sts-cls/valid.json",
-    }, pretrained="monologg/koelectra-base-v3-discriminator", max_epoch=10, num_train_sample=100)
+    }
+    do_experiment(data_files=data_files,
+                  pretrained="monologg/kobigbird-bert-base",
+                  n_gpu=1, max_seq_length=512, max_epoch=10, num_train_sample=100)
