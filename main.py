@@ -50,9 +50,9 @@ def do_experiment(
     gpu_ids = [f"cuda:{n}" for n in range(torch.cuda.device_count())]
     device = torch.device(gpu_ids[n_gpu % len(gpu_ids)] if torch.cuda.is_available() else "cpu")
     ltn.device = device
-    print("\n" + "=" * 120)
+    print("\n" + "=" * 112)
     print(f"[device] {device} ∈ [{', '.join(gpu_ids)}]")
-    print("=" * 120 + "\n")
+    print("=" * 112 + "\n")
 
     # load raw datasets
     raw_datasets = load_dataset("json", data_files=data_files, field="data")
