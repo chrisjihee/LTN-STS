@@ -41,7 +41,7 @@ token_printing_counter = 0
 
 # train LTN model and test
 def do_experiment(
-        n_gpu, max_epoch, pretrained, data_files,
+        max_epoch, pretrained, data_files, n_gpu=0,
         num_train_sample=None, num_test_sample=50,
         max_seq_length=512, learning_rate=1e-5, batch_size=8,
         num_check_tokenized=1, check_tokenizer=False, check_pretrained=False,
@@ -223,4 +223,4 @@ if __name__ == '__main__':
     }
     do_experiment(data_files=data_files,
                   pretrained="monologg/kobigbird-bert-base",
-                  n_gpu=1, max_seq_length=512, max_epoch=10, num_train_sample=100)
+                  max_epoch=10, max_seq_length=512, num_train_sample=100)
