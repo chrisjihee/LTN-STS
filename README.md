@@ -20,7 +20,7 @@ After installation, please run the main module.
 
 Please check the results with following.
 
-- [classification](https://github.com/chrisjihee/LTN-STS/blob/master/expr.ipynb)
+- [classification](https://nbviewer.org/github/chrisjihee/LTN-STS/blob/master/expr.ipynb)
 
 ## Structure of repository
 
