@@ -25,6 +25,7 @@ Please check the results with following.
 
 ## Structure of repository
 
+- `expr.ipynb`: this notebook contains some experiments using LTN-STS and their results.
 - `main.py`: this module contains the implementation of LTN-STS.
 - `data.py`: this module contains converting original KLUE-STS dataset to each task-specific dataset.
 - `data/`: this folder contains the data for our experiments.
