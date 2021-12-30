@@ -1,0 +1,52 @@
+/home/chris/miniconda3/envs/LTN/bin/python /dat/proj/LTNtorch-v0.9/examples/example2.py
+
+
+
+###
+# Dataset
+###
+
+
+
+###
+# LTN setting
+###
+
+
+
+###
+# Utils
+###
+
+
+
+###
+# Learning
+###
+ epoch 0 | loss 0.6727 | Train Sat 0.335 | Test Sat 0.335 | Train Acc 0.348 | Test Acc 0.240
+ epoch 20 | loss 0.5143 | Train Sat 0.533 | Test Sat 0.538 | Train Acc 0.730 | Test Acc 0.500
+ epoch 40 | loss 0.3724 | Train Sat 0.693 | Test Sat 0.706 | Train Acc 0.984 | Test Acc 0.980
+ epoch 60 | loss 0.2810 | Train Sat 0.795 | Test Sat 0.829 | Train Acc 0.992 | Test Acc 0.980
+ epoch 80 | loss 0.2210 | Train Sat 0.841 | Test Sat 0.877 | Train Acc 0.976 | Test Acc 0.980
+ epoch 100 | loss 0.2205 | Train Sat 0.862 | Test Sat 0.905 | Train Acc 0.976 | Test Acc 0.980
+ epoch 120 | loss 0.1715 | Train Sat 0.859 | Test Sat 0.912 | Train Acc 0.974 | Test Acc 0.980
+ epoch 140 | loss 0.1823 | Train Sat 0.829 | Test Sat 0.901 | Train Acc 0.956 | Test Acc 0.980
+ epoch 160 | loss 0.1723 | Train Sat 0.905 | Test Sat 0.922 | Train Acc 0.976 | Test Acc 0.980
+ epoch 180 | loss 0.1419 | Train Sat 0.913 | Test Sat 0.924 | Train Acc 0.984 | Test Acc 0.980
+ epoch 200 | loss 0.1681 | Train Sat 0.903 | Test Sat 0.925 | Train Acc 0.992 | Test Acc 0.980
+ epoch 220 | loss 0.1424 | Train Sat 0.898 | Test Sat 0.926 | Train Acc 0.982 | Test Acc 0.980
+ epoch 240 | loss 0.1727 | Train Sat 0.895 | Test Sat 0.924 | Train Acc 0.984 | Test Acc 0.980
+ epoch 260 | loss 0.1631 | Train Sat 0.905 | Test Sat 0.922 | Train Acc 0.992 | Test Acc 0.980
+ epoch 280 | loss 0.1734 | Train Sat 0.911 | Test Sat 0.920 | Train Acc 0.992 | Test Acc 0.980
+ epoch 300 | loss 0.1169 | Train Sat 0.910 | Test Sat 0.920 | Train Acc 0.992 | Test Acc 0.980
+ epoch 320 | loss 0.1580 | Train Sat 0.917 | Test Sat 0.923 | Train Acc 0.992 | Test Acc 0.980
+ epoch 340 | loss 0.1240 | Train Sat 0.892 | Test Sat 0.921 | Train Acc 0.982 | Test Acc 0.980
+ epoch 360 | loss 0.1020 | Train Sat 0.922 | Test Sat 0.928 | Train Acc 0.984 | Test Acc 0.980
+ epoch 380 | loss 0.1343 | Train Sat 0.914 | Test Sat 0.925 | Train Acc 0.984 | Test Acc 0.980
+ epoch 400 | loss 0.1241 | Train Sat 0.936 | Test Sat 0.927 | Train Acc 0.984 | Test Acc 0.980
+ epoch 420 | loss 0.1475 | Train Sat 0.908 | Test Sat 0.918 | Train Acc 0.982 | Test Acc 0.980
+ epoch 440 | loss 0.0791 | Train Sat 0.937 | Test Sat 0.928 | Train Acc 0.984 | Test Acc 0.980
+ epoch 460 | loss 0.0854 | Train Sat 0.930 | Test Sat 0.927 | Train Acc 0.982 | Test Acc 0.980
+ epoch 480 | loss 0.1063 | Train Sat 0.906 | Test Sat 0.920 | Train Acc 0.984 | Test Acc 0.980
+
+Process finished with exit code 0

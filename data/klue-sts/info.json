@@ -1,0 +1,86 @@
+{
+  "builder_name": "klue",
+  "citation": "@misc{park2021klue,\n      title={KLUE: Korean Language Understanding Evaluation},\n      author={Sungjoon Park and Jihyung Moon and Sungdong Kim and Won Ik Cho and Jiyoon Han and Jangwon Park and Chisung Song and Junseong Kim and Yongsook Song and Taehwan Oh and Joohong Lee and Juhyun Oh and Sungwon Lyu and Younghoon Jeong and Inkwon Lee and Sangwoo Seo and Dongjun Lee and Hyunwoo Kim and Myeonghwa Lee and Seongbo Jang and Seungwon Do and Sunkyoung Kim and Kyungtae Lim and Jongwon Lee and Kyumin Park and Jamin Shin and Seonghyun Kim and Lucy Park and Alice Oh and Jungwoo Ha and Kyunghyun Cho},\n      year={2021},\n      eprint={2105.09680},\n      archivePrefix={arXiv},\n      primaryClass={cs.CL}\n}\n",
+  "config_name": "sts",
+  "dataset_size": 2955578,
+  "description": "KLUE (Korean Language Understanding Evaluation)\nKorean Language Understanding Evaluation (KLUE) benchmark is a series of datasets to evaluate natural language\nunderstanding capability of Korean language models. KLUE consists of 8 diverse and representative tasks, which are accessible\nto anyone without any restrictions. With ethical considerations in mind, we deliberately design annotation guidelines to obtain\nunambiguous annotations for all datasets. Futhermore, we build an evaluation system and carefully choose evaluations metrics\nfor every task, thus establishing fair comparison across Korean language models.\n",
+  "download_checksums": {
+    "http://klue-benchmark.com.s3.amazonaws.com/app/Competitions/000067/data/klue-sts-v1.tar.gz": {
+      "num_bytes": 1349875,
+      "checksum": "539341ba78a3b351c686cf70a448ac7a5886ed95f0719d5e3d2378ba703213bd"
+    }
+  },
+  "download_size": 1349875,
+  "features": {
+    "guid": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "source": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "sentence1": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "sentence2": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "labels": {
+      "label": {
+        "dtype": "float64",
+        "id": null,
+        "_type": "Value"
+      },
+      "real-label": {
+        "dtype": "float64",
+        "id": null,
+        "_type": "Value"
+      },
+      "binary-label": {
+        "num_classes": 2,
+        "names": [
+          "negative",
+          "positive"
+        ],
+        "names_file": null,
+        "id": null,
+        "_type": "ClassLabel"
+      }
+    }
+  },
+  "homepage": "https://klue-benchmark.com/tasks/67/overview/description",
+  "license": "CC-BY-SA-4.0",
+  "post_processed": null,
+  "post_processing_size": null,
+  "size_in_bytes": 4305453,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 2832921,
+      "num_examples": 11668,
+      "dataset_name": "klue"
+    },
+    "validation": {
+      "name": "validation",
+      "num_bytes": 122657,
+      "num_examples": 519,
+      "dataset_name": "klue"
+    }
+  },
+  "supervised_keys": null,
+  "task_templates": null,
+  "version": {
+    "version_str": "1.0.0",
+    "description": "",
+    "major": 1,
+    "minor": 0,
+    "patch": 0
+  }
+}
