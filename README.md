@@ -6,17 +6,21 @@ Semantic Textual Similarity (STS) is to measure the degree of semantic equivalen
 
 After cloning this repository, make sure to install all the requirements.
 
-`git clone git@github.com:chrisjihee/LTN-STS.git`
-
-`pip3 install -r requirements.txt`
+- `git clone git@github.com:chrisjihee/LTN-STS.git`
+- `pip3 install -r requirements.txt`
 
 ## Run
 
 After installation, please run the main module.
 
-`cd LTN-STS`
+- `cd LTN-STS`
+- `python3 main.py`
 
-`python3 main.py`
+### Results
+
+Please check the results with following.
+
+- [classification](https://github.com/chrisjihee/LTN-STS/blob/master/expr.ipynb)
 
 ## Structure of repository
 
@@ -30,7 +34,7 @@ After installation, please run the main module.
 
 LTN-STS has been developed thanks to the following people.
 
-- [Seung-Hoon Na](https://nlp.jbnu.ac.kr/~nash/faculty.html)
-- [Jangwon Park](https://github.com/monologg)
 - [Tommaso Carraro](https://github.com/bmxitalia)
 - [Samy Badreddine](https://www.ai.sony/people/c6ecb9ab786d5b75047f5b00515dc67bae284640/)
+- [Seung-Hoon Na](https://nlp.jbnu.ac.kr/~nash/faculty.html)
+- [Jangwon Park](https://github.com/monologg)
