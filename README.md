@@ -30,6 +30,7 @@ After installation, please run the main module.
 
 LTN-STS has been developed thanks to the following people.
 
-- Seung-Hoon Na (JBNU)
-- Tommaso Carraro (FBK)
-- Samy Badreddine (Sony AI)
+- [Seung-Hoon Na](https://nlp.jbnu.ac.kr/~nash/faculty.html)
+- [Jangwon Park](https://github.com/monologg)
+- [Tommaso Carraro](https://github.com/bmxitalia)
+- [Samy Badreddine](https://www.ai.sony/people/c6ecb9ab786d5b75047f5b00515dc67bae284640/)
