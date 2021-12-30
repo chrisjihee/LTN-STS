@@ -1,8 +1,8 @@
 # LTN-STS
 
-Semantic Textual Similarity (STS) is to measure the degree of semantic equivalence between two sentences. Our system do classification and regression for [KLUE-STS](https://klue-benchmark.com/tasks/67/overview/description) that is essential to other NLP tasks such as machine translation, summarization, and question answering. We implements the system using [LTNtorch](https://github.com/bmxitalia/LTNtorch).
+Semantic Textual Similarity (STS) is to measure the degree of semantic equivalence between two sentences. Our system do classification and regression for **[KLUE-STS](https://klue-benchmark.com/tasks/67/overview/description)** that is essential to other NLP tasks such as machine translation, summarization, and question answering. We implements the system using **[LTNtorch](https://github.com/bmxitalia/LTNtorch)**.
 
-## Installation
+## Setup
 
 After cloning this repository, make sure to install all the requirements.
 
@@ -16,20 +16,18 @@ After installation, please run the main module.
 - `cd LTN-STS`
 - `python3 main.py`
 
-### Results
+## Results
 
 Please check the results with following.
 
-- [classification](https://github.com/chrisjihee/LTN-STS/blob/master/expr.ipynb): Best F1 0.8313(dev) with KoELECTRA-base
-- regression: To be recorded
+- [Classification](https://github.com/chrisjihee/LTN-STS/blob/master/expr.ipynb): **0.8320(dev) F1** with KoELECTRA-base
+- Regression: to be reported
 
 ## Structure of repository
 
 - `main.py`: this module contains the implementation of LTN-STS.
-- `data.py`: this module contains the implementation of converting original KLUE-STS dataset to each task specific dataset.
+- `data.py`: this module contains converting original KLUE-STS dataset to each task-specific dataset.
 - `data/`: this folder contains the data for our experiments.
-- `examples/`: this folder contains some problems approached using LTN.
-- `tutorials/`: this folder contains some important tutorials to getting started with coding in LTN.
 
 ## Acknowledgements
 
