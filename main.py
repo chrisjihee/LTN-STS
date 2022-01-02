@@ -5,12 +5,9 @@ import numpy as np
 import torch
 from datasets import Dataset
 from datasets import load_dataset, load_metric
+from torch import nn
 from transformers import AutoConfig, AutoModel, AutoTokenizer
-from transformers import ElectraConfig, ElectraModel, ElectraTokenizer
-from transformers import BigBirdConfig, BigBirdModel, BigBirdTokenizer
-from transformers.models.bert.modeling_bert import BertForSequenceClassification
-from transformers.models.big_bird.modeling_big_bird import BigBirdClassificationHead
-from transformers.models.electra.modeling_electra import ElectraClassificationHead
+from transformers.activations import get_activation, ACT2FN
 
 from kobert_tokenizer import KoBERTTokenizer
 
@@ -31,8 +28,9 @@ lang_models = (
 token_printing_counter = 0
 
 
-# PyTorch DataLoader to load the dataset for the training and testing of the model
 class DataLoader(object):
+    """PyTorch DataLoader to load the dataset for the training and testing of the model"""
+
     def __init__(self, input_ids, attention_mask, token_type_ids, labels, batch_size=1, shuffle=False):
         self.input_ids = torch.tensor(input_ids)
         self.attention_mask = torch.tensor(attention_mask)
@@ -58,6 +56,82 @@ class DataLoader(object):
                 self.token_type_ids[idxlist[start_idx:end_idx]],
                 self.labels[idxlist[start_idx:end_idx]]
             )
+
+
+class BertClassificationHead(nn.Module):
+    """
+    Head for sentence-level classification tasks.
+    - Almost same as `transformers.models.electra.modeling_electra.ElectraClassificationHead`
+    """
+
+    def __init__(self, config):
+        super().__init__()
+        self.dense = nn.Linear(config.hidden_size, config.hidden_size)
+        classifier_dropout = (
+            config.classifier_dropout if config.classifier_dropout is not None else config.hidden_dropout_prob
+        )
+        self.dropout = nn.Dropout(classifier_dropout)
+        self.out_proj = nn.Linear(config.hidden_size, config.num_labels)
+
+    def forward(self, features, **kwargs):
+        x = features[:, 0, :]  # take <s> token (equiv. to [CLS])
+        x = self.dropout(x)
+        x = self.dense(x)
+        x = get_activation("tanh")(x)
+        x = self.dropout(x)
+        x = self.out_proj(x)
+        return x
+
+
+class ElectraClassificationHead(nn.Module):
+    """
+    Head for sentence-level classification tasks.
+    - Same as `transformers.models.electra.modeling_electra.ElectraClassificationHead`
+    """
+
+    def __init__(self, config):
+        super().__init__()
+        self.dense = nn.Linear(config.hidden_size, config.hidden_size)
+        classifier_dropout = (
+            config.classifier_dropout if config.classifier_dropout is not None else config.hidden_dropout_prob
+        )
+        self.dropout = nn.Dropout(classifier_dropout)
+        self.out_proj = nn.Linear(config.hidden_size, config.num_labels)
+
+    def forward(self, features, **kwargs):
+        x = features[:, 0, :]  # take <s> token (equiv. to [CLS])
+        x = self.dropout(x)
+        x = self.dense(x)
+        x = get_activation("gelu")(x)
+        x = self.dropout(x)
+        x = self.out_proj(x)
+        return x
+
+
+class BigBirdClassificationHead(nn.Module):
+    """
+    Head for sentence-level classification tasks.
+    - Same as `transformers.models.big_bird.modeling_big_bird.BigBirdClassificationHead`
+    """
+
+    def __init__(self, config):
+        super().__init__()
+        self.dense = nn.Linear(config.hidden_size, config.hidden_size)
+        classifier_dropout = (
+            config.classifier_dropout if config.classifier_dropout is not None else config.hidden_dropout_prob
+        )
+        self.dropout = nn.Dropout(classifier_dropout)
+        self.out_proj = nn.Linear(config.hidden_size, config.num_labels)
+        self.config = config
+
+    def forward(self, features, **kwargs):
+        x = features[:, 0, :]  # take <s> token (equiv. to [CLS])
+        x = self.dropout(x)
+        x = self.dense(x)
+        x = ACT2FN[self.config.hidden_act](x)
+        x = self.dropout(x)
+        x = self.out_proj(x)
+        return x
 
 
 # train LTN model and test
@@ -134,15 +208,15 @@ def do_experiment(
                              batch_size=batch_size, shuffle=False) if test_dataset is not None else None
 
     # Neural network using ELECTRA for binary classification task
-    class PretrainedClassificationNet(torch.nn.Module):
+    class PretrainedClassificationNet(nn.Module):
         def __init__(self, num_labels=1):
             super(PretrainedClassificationNet, self).__init__()
-            self.sigmoid = torch.nn.Sigmoid()
+            self.sigmoid = nn.Sigmoid()
             config = AutoConfig.from_pretrained(lang_model, num_labels=num_labels)
             self.pretrained = AutoModel.from_pretrained(lang_model, config=config)
             self.classifier = BigBirdClassificationHead(config) if config.model_type == "big_bird" \
                 else ElectraClassificationHead(config) if config.model_type == "electra" \
-                else torch.nn.Linear(config.hidden_size, config.num_labels)
+                else BertClassificationHead(config)
             model_desc = str(self.pretrained).splitlines()
             idx1 = next((i for i, x in enumerate(model_desc) if "(encoder)" in x), 8)
             idx2 = next((i for i, x in enumerate(model_desc) if "(pooler)" in x), -1)
@@ -150,15 +224,16 @@ def do_experiment(
             if check_pretrained:
                 batch_text = ["한국어 사전학습 모델을 공유합니다.", "오늘은 날씨가 좋다."]
                 inputs = tokenizer.batch_encode_plus(batch_text, padding='max_length', max_length=max_seq_length, truncation=True)
-                hidden = self.pretrained(
+                output = self.pretrained(
                     torch.tensor(inputs['input_ids']),
                     torch.tensor(inputs['attention_mask']),
                     torch.tensor(inputs['token_type_ids'])
-                ).last_hidden_state
+                )
+                hidden = output.last_hidden_state
                 print(f"-      input_ids({'x'.join(str(x) for x in list(torch.tensor(inputs['input_ids']).size()))}) : {inputs['input_ids'][0][:25] + ['...'] + inputs['input_ids'][0][-25:]}")
                 print(f"- attention_mask({'x'.join(str(x) for x in list(torch.tensor(inputs['attention_mask']).size()))}) : {inputs['attention_mask'][0][:25] + ['...'] + inputs['attention_mask'][0][-25:]}")
                 print(f"- token_type_ids({'x'.join(str(x) for x in list(torch.tensor(inputs['token_type_ids']).size()))}) : {inputs['token_type_ids'][0][:25] + ['...'] + inputs['token_type_ids'][0][-25:]}")
-                print(f"-  hidden_output({'x'.join(str(x) for x in list(hidden.size()))}) : {hidden[0]}")
+                print(f"-  output_hidden({'x'.join(str(x) for x in list(hidden.size()))}) : {hidden[0]}")
             print("=" * 112 + "\n")
 
         def forward(self, x1, x2, x3):
@@ -167,11 +242,9 @@ def do_experiment(
                 torch.squeeze(x2, dim=1) if x2.size(dim=1) == 1 and len(x2.size()) == 3 else x2,
                 torch.squeeze(x3, dim=1) if x3.size(dim=1) == 1 and len(x3.size()) == 3 else x3,
             )
-            hidden1 = output.last_hidden_state
-            hidden2 = output.pooler_output
-            logits1 = self.classifier(hidden1)
-            logits2 = self.classifier(hidden2)
-            probs = self.sigmoid(logits2)
+            hidden = output.last_hidden_state
+            logits = self.classifier(hidden)
+            probs = self.sigmoid(logits)
             return probs
 
     # LTN setting
