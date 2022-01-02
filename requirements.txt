@@ -7,3 +7,4 @@ datasets
 torch >= 1.9.0
 LTNtorch == 0.9
 transformers == 4.15.0
+sentencepiece >= 0.1.91

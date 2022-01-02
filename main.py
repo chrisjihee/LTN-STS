@@ -1,10 +1,34 @@
+import argparse
+
 import ltn
 import numpy as np
 import torch
 from datasets import Dataset
 from datasets import load_dataset, load_metric
+from transformers import AutoConfig, AutoModel, AutoTokenizer
 from transformers import ElectraConfig, ElectraModel, ElectraTokenizer
+from transformers import BigBirdConfig, BigBirdModel, BigBirdTokenizer
+from transformers.models.bert.modeling_bert import BertForSequenceClassification
+from transformers.models.big_bird.modeling_big_bird import BigBirdClassificationHead
 from transformers.models.electra.modeling_electra import ElectraClassificationHead
+
+from kobert_tokenizer import KoBERTTokenizer
+
+# global constants
+gpu_ids = tuple([n for n in range(torch.cuda.device_count())])
+cuda_ids = tuple([f"cuda:{n}" for n in gpu_ids])
+data_files = {
+    "train": "data/klue-sts-cls/train.json",
+    "valid": "data/klue-sts-cls/valid.json",
+}
+lang_models = (
+    "skt/kobert-base-v1",
+    "monologg/koelectra-base-v3-discriminator",
+    "monologg/kobigbird-bert-base",
+)
+
+# global variables
+token_printing_counter = 0
 
 
 # PyTorch DataLoader to load the dataset for the training and testing of the model
@@ -36,27 +60,23 @@ class DataLoader(object):
             )
 
 
-token_printing_counter = 0
-
-
 # train LTN model and test
 def do_experiment(
-        max_epoch, pretrained, data_files, n_gpu=0,
+        max_epoch, lang_model, gpu_id=0,
         num_train_sample=None, num_test_sample=50,
         max_seq_length=512, learning_rate=1e-5, batch_size=8,
-        num_check_tokenized=1, check_tokenizer=False, check_pretrained=False,
+        num_check_tokenized=1, check_tokenizer=True, check_pretrained=True,
 ):
     # set cuda device
-    gpu_ids = [f"cuda:{n}" for n in range(torch.cuda.device_count())]
-    device = torch.device(gpu_ids[n_gpu % len(gpu_ids)] if torch.cuda.is_available() else "cpu")
+    device = torch.device(cuda_ids[gpu_id] if gpu_id in gpu_ids and torch.cuda.is_available() else "cpu")
     ltn.device = device
     print("\n" + "=" * 112)
-    print(f"[device] {device} ∈ [{', '.join(gpu_ids)}]")
+    print(f"[device] {device} ∈ [{', '.join(cuda_ids)}]")
     print("=" * 112 + "\n")
 
     # load raw datasets
     raw_datasets = load_dataset("json", data_files=data_files, field="data")
-    if num_train_sample is not None and num_test_sample is not None:
+    if num_train_sample is not None and num_test_sample is not None and num_train_sample > 0 and num_test_sample > 0:
         for k in raw_datasets.keys():
             raw_datasets[k] = Dataset.from_dict(raw_datasets[k][:(num_train_sample if k == "train" else num_test_sample)])
     print("\n" + "=" * 112)
@@ -66,11 +86,12 @@ def do_experiment(
     print("=" * 112 + "\n")
 
     # load tokenizer
-    tokenizer = ElectraTokenizer.from_pretrained(pretrained)
+    tokenizer = KoBERTTokenizer.from_pretrained(lang_model) if "kobert" in lang_model \
+        else AutoTokenizer.from_pretrained(lang_model)
     print("\n" + "=" * 112)
-    print(f'[tokenizer] {tokenizer}')
+    print(f'[tokenizer({type(tokenizer).__name__})] {tokenizer}')
     if check_tokenizer:
-        text = "[CLS] 한국어 ELECTRA를 공유합니다. [SEP]"
+        text = "[CLS] 한국어 사전학습 모델을 공유합니다. [SEP]"
         tokens = tokenizer.tokenize(text)
         ids = tokenizer.convert_tokens_to_ids(tokens)
         print("- text   =", text)
@@ -88,7 +109,8 @@ def do_experiment(
         if token_printing_counter < num_check_tokenized:
             print("\n" + "=" * 112)
             for i, a in enumerate(result['input_ids'][:1]):
-                print(f"- [tokens]({len(a)})\t= {tokenizer.convert_ids_to_tokens(a)}")
+                tokens = tokenizer.convert_ids_to_tokens(a)
+                print(f"- [tokens]({len(a)})\t= {tokens[:25] + ['...'] + tokens[-25:]}")
                 token_printing_counter += 1
             print("=" * 112 + "\n")
         return result
@@ -112,41 +134,48 @@ def do_experiment(
                              batch_size=batch_size, shuffle=False) if test_dataset is not None else None
 
     # Neural network using ELECTRA for binary classification task
-    class ElectraClassificationNet(torch.nn.Module):
+    class PretrainedClassificationNet(torch.nn.Module):
         def __init__(self, num_labels=1):
-            super(ElectraClassificationNet, self).__init__()
+            super(PretrainedClassificationNet, self).__init__()
             self.sigmoid = torch.nn.Sigmoid()
-            config = ElectraConfig.from_pretrained(pretrained, num_labels=num_labels)
-            self.classifier = ElectraClassificationHead(config)
-            self.electra = ElectraModel.from_pretrained(pretrained, config=config)
-            print("\n" + "=" * 112)
-            print(f'[pretrained] {chr(10).join(str(self.electra).splitlines()[:8])}')
+            config = AutoConfig.from_pretrained(lang_model, num_labels=num_labels)
+            self.pretrained = AutoModel.from_pretrained(lang_model, config=config)
+            self.classifier = BigBirdClassificationHead(config) if config.model_type == "big_bird" \
+                else ElectraClassificationHead(config) if config.model_type == "electra" \
+                else torch.nn.Linear(config.hidden_size, config.num_labels)
+            model_desc = str(self.pretrained).splitlines()
+            idx1 = next((i for i, x in enumerate(model_desc) if "(encoder)" in x), 8)
+            idx2 = next((i for i, x in enumerate(model_desc) if "(pooler)" in x), -1)
+            print(f'[pretrained] {chr(10).join(model_desc[:idx1] + ["  ..."] + model_desc[idx2:])}')
             if check_pretrained:
-                batch_text = ["한국어 모델을 공유합니다.", "오늘은 날씨가 좋다."]
+                batch_text = ["한국어 사전학습 모델을 공유합니다.", "오늘은 날씨가 좋다."]
                 inputs = tokenizer.batch_encode_plus(batch_text, padding='max_length', max_length=max_seq_length, truncation=True)
-                hidden = self.electra(
+                hidden = self.pretrained(
                     torch.tensor(inputs['input_ids']),
                     torch.tensor(inputs['attention_mask']),
                     torch.tensor(inputs['token_type_ids'])
                 ).last_hidden_state
-                print(f"-      input_ids({list(torch.tensor(inputs['input_ids']).size())}) : {inputs['input_ids'][0]}")
-                print(f"- attention_mask({list(torch.tensor(inputs['attention_mask']).size())}) : {inputs['attention_mask'][0]}")
-                print(f"- token_type_ids({list(torch.tensor(inputs['token_type_ids']).size())}) : {inputs['token_type_ids'][0]}")
-                print(f"-   hidden_state({list(hidden.size())}) : {hidden[0]}")
+                print(f"-      input_ids({'x'.join(str(x) for x in list(torch.tensor(inputs['input_ids']).size()))}) : {inputs['input_ids'][0][:25] + ['...'] + inputs['input_ids'][0][-25:]}")
+                print(f"- attention_mask({'x'.join(str(x) for x in list(torch.tensor(inputs['attention_mask']).size()))}) : {inputs['attention_mask'][0][:25] + ['...'] + inputs['attention_mask'][0][-25:]}")
+                print(f"- token_type_ids({'x'.join(str(x) for x in list(torch.tensor(inputs['token_type_ids']).size()))}) : {inputs['token_type_ids'][0][:25] + ['...'] + inputs['token_type_ids'][0][-25:]}")
+                print(f"-  hidden_output({'x'.join(str(x) for x in list(hidden.size()))}) : {hidden[0]}")
             print("=" * 112 + "\n")
 
         def forward(self, x1, x2, x3):
-            hidden = self.electra(
+            output = self.pretrained(
                 torch.squeeze(x1, dim=1) if x1.size(dim=1) == 1 and len(x1.size()) == 3 else x1,
                 torch.squeeze(x2, dim=1) if x2.size(dim=1) == 1 and len(x2.size()) == 3 else x2,
                 torch.squeeze(x3, dim=1) if x3.size(dim=1) == 1 and len(x3.size()) == 3 else x3,
-            ).last_hidden_state
-            logits = self.classifier(hidden)
-            probs = self.sigmoid(logits)
+            )
+            hidden1 = output.last_hidden_state
+            hidden2 = output.pooler_output
+            logits1 = self.classifier(hidden1)
+            logits2 = self.classifier(hidden2)
+            probs = self.sigmoid(logits2)
             return probs
 
     # LTN setting
-    predicate = ltn.Predicate(ElectraClassificationNet(num_labels=1)).to(device)
+    predicate = ltn.Predicate(PretrainedClassificationNet(num_labels=1)).to(device)
     Not = ltn.Connective(ltn.fuzzy_ops.NotStandard())
     ForAll = ltn.Quantifier(ltn.fuzzy_ops.AggregPMeanError(p=2), quantifier="f")
     SatAgg = ltn.fuzzy_ops.SatAgg()
@@ -214,13 +243,39 @@ def do_experiment(
             f"Test {', '.join(f'{k[:3]}={v:.4f}' for k, v in test_score.items())}" if test_score is not None else None,
         ] if x is not None))
 
+    return 0
+
 
 # main entry
 if __name__ == '__main__':
-    data_files = {
-        "train": "data/klue-sts-cls/train.json",
-        "valid": "data/klue-sts-cls/valid.json",
+    expr_tasks = {
+        "STS-CLS": lambda n, m, k: sum([
+            do_experiment(gpu_id=n, lang_model=lang_models[m], num_train_sample=k, max_seq_length=512, max_epoch=10)
+        ]),
+        "STS-REG": lambda n, m, k: sum([
+            1
+        ]),
     }
-    do_experiment(data_files=data_files,
-                  pretrained="monologg/kobigbird-bert-base",
-                  max_epoch=10, max_seq_length=512, num_train_sample=100)
+    show_tasks = {
+        "total": lambda: sum([
+            1
+        ]),
+    }
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--task", default=None, type=str, required=True,
+                        help=', '.join(list(expr_tasks.keys()) + list(show_tasks.keys())))
+    parser.add_argument("-n", default=0, type=int, required=False,
+                        help=f"gpu id: {', '.join(str(x) for x in gpu_ids)}")
+    parser.add_argument("-m", default=0, type=int, required=False,
+                        help=f"language model id: {', '.join(str(x) for x in range(len(lang_models)))}")
+    parser.add_argument("-k", default=100, type=int, required=False,
+                        help=f"number of training samples")
+    args = parser.parse_args()
+
+    if args.task in expr_tasks:
+        expr_tasks[args.task](n=args.n, m=args.m, k=args.k)
+    elif args.task in show_tasks:
+        show_tasks[args.task]()
+    else:
+        raise ValueError(f"Not available task: {args.task}")
