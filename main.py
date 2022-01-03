@@ -19,6 +19,7 @@ data_files = {
     "valid": "data/klue-sts-cls/valid.json",
 }
 lang_models = (
+    "bert-base-multilingual-uncased",
     "skt/kobert-base-v1",
     "monologg/koelectra-base-v3-discriminator",
     "monologg/kobigbird-bert-base",
