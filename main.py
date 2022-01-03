@@ -139,7 +139,7 @@ class BigBirdClassificationHead(nn.Module):
 def do_experiment(
         max_epoch, lang_model, gpu_id=0,
         num_train_sample=None, num_test_sample=50,
-        max_seq_length=512, learning_rate=1e-5, batch_size=8,
+        max_seq_length=512, learning_rate=2e-5, batch_size=8,
         num_check_tokenized=1, check_tokenizer=True, check_pretrained=True,
 ):
     # set cuda device
