@@ -221,6 +221,7 @@ def do_experiment(
             model_desc = str(self.pretrained).splitlines()
             idx1 = next((i for i, x in enumerate(model_desc) if "(encoder)" in x), 8)
             idx2 = next((i for i, x in enumerate(model_desc) if "(pooler)" in x), -1)
+            print("\n" + "=" * 112)
             print(f'[pretrained] {chr(10).join(model_desc[:idx1] + ["  ..."] + model_desc[idx2:])}')
             if check_pretrained:
                 batch_text = ["한국어 사전학습 모델을 공유합니다.", "오늘은 날씨가 좋다."]

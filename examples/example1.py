@@ -1,9 +1,18 @@
+import ltn
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from sklearn.metrics import accuracy_score
 
-import ltn
+# set cuda device
+gpu_id = 1
+gpu_ids = tuple([n for n in range(torch.cuda.device_count())])
+cuda_ids = tuple([f"cuda:{n}" for n in gpu_ids])
+device = torch.device(cuda_ids[gpu_id] if gpu_id in gpu_ids and torch.cuda.is_available() else "cpu")
+ltn.device = device
+print("\n" + "=" * 112)
+print(f"[device] {device} ∈ [{', '.join(cuda_ids)}]")
+print("=" * 112 + "\n")
 
 print()
 print()

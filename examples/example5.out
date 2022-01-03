@@ -1,4 +1,9 @@
-/home/chris/miniconda3/envs/LTN/bin/python /dat/proj/LTNtorch-v0.9/examples/example5.py
+/home/chris/miniconda3/envs/LTN/bin/python /dat/proj/LTN-STS/examples/example5.py
+
+================================================================================================================
+[device] cuda:1 ∈ [cuda:0, cuda:1, cuda:2, cuda:3]
+================================================================================================================
+
 
 
 
@@ -23,15 +28,15 @@
 ###
 # Learning
 ###
- epoch 0 | loss 0.8528 | Train Sat 0.164 | Test Sat 0.216 | Train RMSE 53.761 | Test RMSE 52.802
- epoch 50 | loss 0.3043 | Train Sat 0.697 | Test Sat 0.719 | Train RMSE 9.220 | Test RMSE 7.298
- epoch 100 | loss 0.3066 | Train Sat 0.695 | Test Sat 0.722 | Train RMSE 8.716 | Test RMSE 7.261
- epoch 150 | loss 0.3025 | Train Sat 0.710 | Test Sat 0.729 | Train RMSE 9.051 | Test RMSE 7.058
- epoch 200 | loss 0.2948 | Train Sat 0.720 | Test Sat 0.739 | Train RMSE 8.706 | Test RMSE 6.703
- epoch 250 | loss 0.2812 | Train Sat 0.721 | Test Sat 0.740 | Train RMSE 8.587 | Test RMSE 6.746
- epoch 300 | loss 0.2888 | Train Sat 0.728 | Test Sat 0.749 | Train RMSE 8.579 | Test RMSE 6.451
- epoch 350 | loss 0.2730 | Train Sat 0.738 | Test Sat 0.749 | Train RMSE 9.001 | Test RMSE 6.520
- epoch 400 | loss 0.2666 | Train Sat 0.720 | Test Sat 0.757 | Train RMSE 8.398 | Test RMSE 6.250
- epoch 450 | loss 0.2906 | Train Sat 0.724 | Test Sat 0.760 | Train RMSE 8.208 | Test RMSE 6.130
+ epoch 0 | loss 0.7879 | Train Sat 0.285 | Test Sat 0.297 | Train RMSE 55.834 | Test RMSE 51.913
+ epoch 50 | loss 0.3269 | Train Sat 0.683 | Test Sat 0.705 | Train RMSE 8.823 | Test RMSE 8.928
+ epoch 100 | loss 0.2882 | Train Sat 0.717 | Test Sat 0.706 | Train RMSE 8.077 | Test RMSE 8.703
+ epoch 150 | loss 0.2919 | Train Sat 0.717 | Test Sat 0.709 | Train RMSE 8.233 | Test RMSE 8.618
+ epoch 200 | loss 0.2699 | Train Sat 0.730 | Test Sat 0.714 | Train RMSE 8.649 | Test RMSE 8.582
+ epoch 250 | loss 0.2606 | Train Sat 0.724 | Test Sat 0.717 | Train RMSE 8.595 | Test RMSE 8.522
+ epoch 300 | loss 0.2771 | Train Sat 0.737 | Test Sat 0.717 | Train RMSE 7.952 | Test RMSE 8.530
+ epoch 350 | loss 0.2829 | Train Sat 0.737 | Test Sat 0.720 | Train RMSE 8.219 | Test RMSE 8.516
+ epoch 400 | loss 0.2471 | Train Sat 0.714 | Test Sat 0.722 | Train RMSE 8.058 | Test RMSE 8.562
+ epoch 450 | loss 0.2691 | Train Sat 0.739 | Test Sat 0.719 | Train RMSE 7.414 | Test RMSE 8.507
 
 Process finished with exit code 0
