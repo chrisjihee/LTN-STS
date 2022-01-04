@@ -152,8 +152,7 @@ for epoch in range(500):
         # ground the variables with current batch of data
         x = ltn.Variable("x", x_data)  # samples
         y = ltn.Variable("y", y_data)  # ground truths
-        sat_agg = Forall(ltn.diag(x, y), Eq(f(x), y)).value
-        loss = 1. - sat_agg
+        loss = 1. - SatAgg(Forall(ltn.diag(x, y), Eq(f(x), y)))
         loss.backward()
         optimizer.step()
         train_loss += loss.item()
