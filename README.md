@@ -9,23 +9,44 @@ After cloning this repository, make sure to install all the requirements.
 - `git clone git@github.com:chrisjihee/LTN-STS.git`
 - `pip3 install -r requirements.txt`
 
+## Usage
+
+After installation, please check the usage of the main module.
+
+- `python3 main.py -h`
+```
+usage: main.py [-h] -t T [-n N] [-m M] [-k K] [-e E] [-lr LR] [-bs BS] [-msl MSL]
+
+optional arguments:
+  -h, --help  show this help message and exit
+  -t T        task name: STS-CLS, STS-REG
+  -n N        gpu id: 0, 1, 2, 3
+  -m M        pretrained model id: 0, 1, 2, 3
+  -k K        number of training samples
+  -e E        number of training epochs
+  -lr LR      learning rate
+  -bs BS      batch size
+  -msl MSL    max sequence length
+```
+
 ## Run
 
-After installation, please run the main module.
+After checking the usage, please run the main module with some proper options like following:
 
-- `cd LTN-STS`
-- `python3 main.py`
+- `python3 main.py -t STS-CLS -n 0 -m 2 -k 100 -e 1`
 
 ## Results
 
 Please check the results with following.
 
-- [Classification](https://github.com/chrisjihee/LTN-STS/blob/master/expr.ipynb): **0.8320(dev) F1** with KoELECTRA-base
-- Regression: to be reported
+- [Classification](https://github.com/chrisjihee/LTN-STS/blob/master/expr2.ipynb): **0.8437(dev) F1** with KoELECTRA
+- [Regression](https://github.com/chrisjihee/LTN-STS/blob/master/expr2.ipynb): **0.9290(dev) Pearson** with KoELECTRA
 
 ## Structure of repository
 
-- `expr.ipynb`: this notebook contains some experiments using LTN-STS and their results.
+- `expr1.ipynb`: this notebook contains some experiments using LTN-STS with KoBERT.
+- `expr2.ipynb`: this notebook contains some experiments using LTN-STS with KoELECTRA.
+- `expr3.ipynb`: this notebook contains some experiments using LTN-STS with KoBigBird.
 - `main.py`: this module contains the implementation of LTN-STS.
 - `data.py`: this module contains converting original KLUE-STS dataset to each task-specific dataset.
 - `data/`: this folder contains the data for our experiments.
