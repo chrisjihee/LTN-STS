@@ -40,7 +40,7 @@ After checking the usage, please run the main module with some proper options li
 Please check the results with following.
 
 - [Classification](https://github.com/chrisjihee/LTN-STS/blob/master/expr2.ipynb): **0.8437(dev) F1** with KoELECTRA
-- [Regression](https://github.com/chrisjihee/LTN-STS/blob/master/expr2.ipynb): **0.9290(dev) Pearson'r** with KoELECTRA
+- [Regression](https://github.com/chrisjihee/LTN-STS/blob/master/expr2.ipynb): **0.9290(dev) Pearson's r** with KoELECTRA
 
 ## Structure of repository
 
